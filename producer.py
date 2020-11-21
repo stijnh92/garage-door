@@ -9,7 +9,7 @@ import config
 
 LEFT_SENSOR_GPIO = 14
 RIGHT_SENSOR_GPIO = 15
-CHECK_INTERVAL = 5  # In seconds
+CHECK_INTERVAL = 2  # In seconds
 logging.basicConfig(level=logging.DEBUG)
 
 client = mqtt.Client()
@@ -21,6 +21,7 @@ class DoorSensor:
     def __init__(self, gpio, topic):
         self.gpio = gpio
         self.topic = topic
+        self.state = None
         GPIO.setup(self.gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def is_open(self):
@@ -32,10 +33,15 @@ class DoorSensor:
     def get_state(self):
         return 'ON' if self.is_open() else 'OFF'
 
+    def update_state(self):
+        new_state = self.get_state()
+        if self.state != new_state:
+            self.state = new_state
+            self.publish_state()
+
     def publish_state(self):
-        state = self.get_state()
-        client.publish(self.topic, state)
-        logging.info("Published state %s on topic %s" % (state, self.topic))
+        client.publish(self.topic, self.state)
+        logging.info("Published state %s on topic %s" % (self.state, self.topic))
 
 
 def main():
@@ -43,8 +49,8 @@ def main():
     right_door = DoorSensor(RIGHT_SENSOR_GPIO, 'home-assistant/garage-door-right/sensor')
 
     while True:
-        left_door.publish_state()
-        right_door.publish_state()
+        left_door.update_state()
+        right_door.update_state()
         time.sleep(CHECK_INTERVAL)
 
 
