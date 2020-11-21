@@ -1,0 +1,3 @@
+MQTT_HOST = 'www.example.com'
+MQTT_USER = 'user'
+MQTT_PASSWORD = 'password'
