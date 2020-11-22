@@ -3,9 +3,21 @@
 import smbus
 import time
 
+import paho.mqtt.client as mqtt
+
+import config
+
+
 bus = smbus.SMBus(1)
 ADDRESS = 0x40
 
+client = mqtt.Client()
+client.username_pw_set(config.MQTT_USER, config.MQTT_PASSWORD)
+client.connect(config.MQTT_HOST, 1883, 60)
+
+TEMPERATURE_TOPIC = 'home-assistant/garage/temperature'
+HUMIDITY_TOPIC = 'home-assistant/garage/humidity'
+UPDATE_INTERVAL = 60  # Time in seconds
 
 def read_data(value):
     bus.write_byte(ADDRESS, value)
@@ -30,9 +42,12 @@ def get_humidity():
     return -6 + ((humidity * 125.0) / 65536.0)
 
 
-if __name__ == '__main__':
-    temp = get_temperature()
-    humidity = get_humidity()
+def main():
+    while True:
+        client.publish(TEMPERATURE_TOPIC, get_temperature())
+        client.publish(HUMIDITY_TOPIC, get_humidity())
+        time.sleep(UPDATE_INTERVAL)
 
-    print("Temperature: ", '%.2f' % temp, "C")
-    print("Humidity: ", '%.2f' % humidity, "%")
+
+if __name__ == '__main__':
+    main()

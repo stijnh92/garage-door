@@ -9,7 +9,7 @@ import config
 
 LEFT_SENSOR_GPIO = 14
 RIGHT_SENSOR_GPIO = 15
-CHECK_INTERVAL = 2  # In seconds
+UPDATE_INTERVAL = 2  # Time in seconds
 logging.basicConfig(level=logging.DEBUG)
 
 client = mqtt.Client()
@@ -49,7 +49,7 @@ def main():
     while True:
         left_door.update_state()
         right_door.update_state()
-        time.sleep(CHECK_INTERVAL)
+        time.sleep(UPDATE_INTERVAL)
 
 
 def setup_gpio():
