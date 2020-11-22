@@ -44,8 +44,8 @@ def get_humidity():
 
 def main():
     while True:
-        client.publish(TEMPERATURE_TOPIC, get_temperature())
-        client.publish(HUMIDITY_TOPIC, get_humidity())
+        client.publish(TEMPERATURE_TOPIC, '%.2f' % get_temperature())
+        client.publish(HUMIDITY_TOPIC, '%.2f' % get_humidity())
         time.sleep(UPDATE_INTERVAL)
 
 
