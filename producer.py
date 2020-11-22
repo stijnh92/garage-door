@@ -34,10 +34,8 @@ class DoorSensor:
         return 'ON' if self.is_open() else 'OFF'
 
     def update_state(self):
-        new_state = self.get_state()
-        if self.state != new_state:
-            self.state = new_state
-            self.publish_state()
+        self.state = self.get_state()
+        self.publish_state()
 
     def publish_state(self):
         client.publish(self.topic, self.state)
