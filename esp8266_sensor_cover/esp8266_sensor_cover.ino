@@ -6,8 +6,8 @@ const char* SSID_PASSWORD = "*";
 const char* MQTT_HOST = "*";
 const char* MQTT_USER = "*";
 const char* MQTT_PASSWORD = "*";
-const char* SUB_TOPIC = "*";
-const char* PUB_TOPIC = "*";
+const char* SUB_TOPIC = "home-assistant/garage-door-basement/set";
+const char* PUB_TOPIC = "home-assistant/garage-door-basement/sensor";
 
 const int RELAY_PIN = 13;
 const int REED_PIN = 2;
@@ -45,9 +45,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
   payload[length] = '\0';
   strTopic = String((char*)topic);
   if(strTopic == SUB_TOPIC) {
+    Serial.println("Toggling garage door...");
     digitalWrite(RELAY_PIN, LOW);
     delay(300);
     digitalWrite(RELAY_PIN, HIGH);
+    Serial.println("Garage door toggled!");
   }
 }
 
@@ -62,7 +64,7 @@ void reconnect() {
       client.subscribe(SUB_TOPIC);
     } else {
       Serial.print("failed, rc=");
-      Serial.print(client.state());
+      Serial.println(client.state());
       Serial.println("Try again in 5 seconds...");
       delay(5000);
     }
